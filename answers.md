@@ -50,6 +50,7 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
   3. Restart the datadog agent
   
       `sudo systemctl stop datadog-agent`
+      
       `sudo systemctl start datadog-agent`
       
   4. The host is now showing the defined tags

@@ -41,7 +41,7 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
 
           cd /etc/datadog-agent
 
-  2. Edit the datadog.yaml file to include the following line: "tags: purpose:hiring, role:solutionsengineer, location:spain"
+  2. Edit the `datadog.yaml` file to include the following line: "tags: purpose:hiring, role:solutionsengineer, location:spain"
   
           sudo vi datadog.yaml
 
@@ -66,7 +66,7 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
   
     1. I have used the simplest possible version of the MongoDB yaml file.
 
-<img src="/img/MongoYAML.png" width="40%">
+<img src="/img/MongoYAML.png" width="20%">
     
    3. We need to change the file owner to dd-agent and then restar the agent.
     

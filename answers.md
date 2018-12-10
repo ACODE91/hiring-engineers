@@ -37,54 +37,98 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
 
 * Add tags in the Agent config file and show us a screenshot of your host and its tags on the Host Map page in Datadog.
 
-  1. On your server navigate to /etc/datadog-agent
+  1. On your server navigate to `/etc/datadog-agent`
 
-    `cd /etc/datadog-agent`
+          cd /etc/datadog-agent
 
   2. Edit the datadog.yaml file to include the following line: "tags: purpose:hiring, role:solutionsengineer, location:spain"
   
-      `sudo vi datadog.yaml`
+          sudo vi datadog.yaml
 
-   <img src="/img/ConfigTags.png" width="45%">   
+<img src="/img/ConfigTags.png" width="45%">   
    
   3. Restart the datadog agent
   
-      `sudo service datadog-agent restart`
+          sudo service datadog-agent restart
       
   4. The host is now showing the defined tags
     
-    <img src="/img/HostWithTags.png" width="100%">
+<img src="/img/HostWithTags.png" width="100%">
     
 * Install a database on your machine (MongoDB, MySQL, or PostgreSQL) and then install the respective Datadog integration for that database.
 
-    1. I have choosen to install MongoDB. Full step by step guide on [MongoDB Installtion Guide](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+  1. I have choosen to install MongoDB. Full step by step guide on [MongoDB Installation Guide](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
     
-    2. The MongoDB integration is installed by default with the 6.x version of the agent. The only required configuration is to create a mongo.yaml file on /etc/datadog-agent/conf.d/mongo.d/
-    `cd /etc/datadog-agent/conf.d/mongo.d`
+  2. The MongoDB integration is installed by default with the 6.x version of the agent. The only required configuration is to create a mongo.yaml file on `/etc/datadog-agent/conf.d/mongo.d/`
 
-    `sudo vi mongo.yaml`
+          cd /etc/datadog-agent/conf.d/mongo.d
+          sudo vi mongo.yaml
+  
+    1. I have used the simplest possible version of the MongoDB yaml file.
+
+<img src="/img/MongoYAML.png" width="40%">
     
-      1. I have used the simples possible version of the MongoDB yaml file.
-      
-      <img src="/img/MongoYAML.png" width="100%">
+   3. We need to change the file owner to dd-agent and then restar the agent.
     
-    3. We need to change the file owner to dd-agent and then restar the agent.
+     sudo chown dd-agent:dd-agent mongo.yaml
+     sudo service datadog-agent restart
     
-    `sudo chown dd-agent:dd-agent mongo.yaml`
+   4. In the agent status we can verify that the MongoDB integration is working
     
-    `sudo service datadog-agent restart`
+    sudo datadog-agent status
     
-    4. In the agent status we can verify that the MongoDB integration is working
+<img src="/img/MongoStatus.png" width="80%">
     
-    `sudo datadog-agent status`
+  5. In Datadog we navigate to Integration and activate the MongoDB Integration. First, selecting it from the list and then clicking on the **Install Integration** button
+
+<img src="/img/Integrations.png" width="40%">
+
+<img src="/img/MongoIntegration.png" width="80%">
+
+  6. And we see some interesting metrics from the MongoDB Dashboard (available from the host, clicking on the _mongodb_ tag)
+  
+<img src="/img/MongoDashboard.png" width="100%">
     
-    <img src="/img/MongoStatus.png" width="100%">
-    
-    
-    - - - - 
 * Create a custom Agent check that submits a metric named my_metric with a random value between 0 and 1000.
+
+  1. Following instructions from [Datadog Documentation](https://docs.datadoghq.com/developers/write_agent_check/?tab=agentv6) it's fairly straight forward to create the custom agent check.
+    1. Create a file called `ruben.yaml` on the `/etc/datadog-agent/conf.d/` folder with the following code:
+    
+      instances: [{}]
+    
+    2. Create a file called `ruben.py` on the `/etc/datadog-agent/checks.d/` folder with the following code
+    
+            from datadog_checks.checks import AgentCheck
+            from random import uniform
+            __version__ = "1.0.0"
+            class Ruben(AgentCheck):
+              def check(self, instance):
+                self.gauge('custom.ruben', uniform(0, 1000))
+   3. We can verify that the check is correct using the agent's commands: `sudo datadog-agent check ruben`
+    
+<img src="/img/CustomCheck.png" width="100%">
+
+   4. And see the gauge graph on Datadog
+   
+<img src="/img/CustomCheckGraph.png" width="100%">
+
 * Change your check's collection interval so that it only submits the metric once every 45 seconds.
+
+  1. As described in [the Collection Interval section](https://docs.datadoghq.com/developers/write_agent_check/?tab=agentv6#collection-interval), changing the collection interval is done by setting it on the `ruben.yaml`file on `/etc/datadog-agent/conf.d/`
+    1. The check config file, `ruben.yaml`, needs to be updated in the following way:
+
+<img src="/img/CheckInterval.png" width="100%">
+
+   2. The check is now sending data every 45 seconds.
+   
+<img src="/img/CheckInterval.png" width="100%">
+  
 * **Bonus Question** Can you change the collection interval without modifying the Python check file you created?
+
+ * It seems that this question is outdated, as the obvious answer following the documentation) doesn't require to modify the custom check's python file.
+ * Just for the sake of the exercise, I can try to answer the reverse question. How to report every 45 seconds without chaging the config file.
+    1. Considering the default reporting inteval is 15 seconds, and the agent will report only if the previous execution of the custom check has finished, a simple answer will be to include a `time.sleep(20)`step just after the `self.gauge('custom.ruben', uniform(0, 1000))`step.
+    2. This will inhibit the agent to report in the second and third slots (15 and 30 seconds), but will freed the check code long enough the third slot arrives (45 seconds).
 
 ## Visualizing Data:
 

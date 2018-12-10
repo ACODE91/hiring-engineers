@@ -49,9 +49,7 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
    
   3. Restart the datadog agent
   
-      `sudo systemctl stop datadog-agent`
-      
-      `sudo systemctl start datadog-agent`
+      `sudo service datadog-agent restart`
       
   4. The host is now showing the defined tags
     
@@ -61,7 +59,27 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
 
     1. I have choosen to install MongoDB. Full step by step guide on [MongoDB Installtion Guide](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
     
-    2. The MongoDB integration is installed by default with the 6.x version of the agent. The only required configuration is to create a mongo.yaml file on /etc/datadog-agent/conf.d/
+    2. The MongoDB integration is installed by default with the 6.x version of the agent. The only required configuration is to create a mongo.yaml file on /etc/datadog-agent/conf.d/mongo.d/
+    `cd /etc/datadog-agent/conf.d/mongo.d`
+
+    `sudo vi mongo.yaml`
+    
+      1. I have used the simples possible version of the MongoDB yaml file.
+      
+      <img src="/img/MongoYAML.png" width="100%">
+    
+    3. We need to change the file owner to dd-agent and then restar the agent.
+    
+    `sudo chown dd-agent:dd-agent mongo.yaml`
+    
+    `sudo service datadog-agent restart`
+    
+    4. In the agent status we can verify that the MongoDB integration is working
+    
+    `sudo datadog-agent status`
+    
+    <img src="/img/MongoStatus.png" width="100%">
+    
     
     - - - - 
 * Create a custom Agent check that submits a metric named my_metric with a random value between 0 and 1000.

@@ -66,9 +66,9 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
   
     1. I have used the simplest possible version of the MongoDB yaml file.
 
-<img src="/img/MongoYAML.png" width="20%">
+<img src="/img/MongoYAML.png" width="30%">
     
-   3. We need to change the file owner to dd-agent and then restar the agent.
+   3. We need to change the file owner to dd-agent and then restart the agent.
     
      sudo chown dd-agent:dd-agent mongo.yaml
      sudo service datadog-agent restart
@@ -77,7 +77,7 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
     
     sudo datadog-agent status
     
-<img src="/img/MongoStatus.png" width="80%">
+<img src="/img/MongoStatus.png" width="40%">
     
   5. In Datadog we navigate to Integration and activate the MongoDB Integration. First, selecting it from the list and then clicking on the **Install Integration** button
 
@@ -91,12 +91,12 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
     
 * Create a custom Agent check that submits a metric named my_metric with a random value between 0 and 1000.
 
-  1. Following instructions from [Datadog Documentation](https://docs.datadoghq.com/developers/write_agent_check/?tab=agentv6) it's fairly straight forward to create the custom agent check.
+ 1. Following instructions from [Datadog Documentation](https://docs.datadoghq.com/developers/write_agent_check/?tab=agentv6) it's fairly straight forward to create the custom agent check.
     1. Create a file called `ruben.yaml` on the `/etc/datadog-agent/conf.d/` folder with the following code:
     
       instances: [{}]
     
-    2. Create a file called `ruben.py` on the `/etc/datadog-agent/checks.d/` folder with the following code
+    2. Create a file named `ruben.py` on the `/etc/datadog-agent/checks.d/` folder with the following code
     
             from datadog_checks.checks import AgentCheck
             from random import uniform
@@ -106,22 +106,22 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
                 self.gauge('custom.ruben', uniform(0, 1000))
    3. We can verify that the check is correct using the agent's commands: `sudo datadog-agent check ruben`
     
-<img src="/img/CustomCheck.png" width="100%">
+<img src="/img/CustomCheck.png" width="70%">
 
    4. And see the gauge graph on Datadog
    
-<img src="/img/CustomCheckGraph.png" width="100%">
+<img src="/img/CustomCheckGraph.png" width="50%">
 
 * Change your check's collection interval so that it only submits the metric once every 45 seconds.
 
   1. As described in [the Collection Interval section](https://docs.datadoghq.com/developers/write_agent_check/?tab=agentv6#collection-interval), changing the collection interval is done by setting it on the `ruben.yaml`file on `/etc/datadog-agent/conf.d/`
     1. The check config file, `ruben.yaml`, needs to be updated in the following way:
 
-<img src="/img/CheckInterval.png" width="100%">
+<img src="/img/CheckInterval.png" width="50%">
 
    2. The check is now sending data every 45 seconds.
    
-<img src="/img/CheckInterval.png" width="100%">
+<img src="/img/CheckIntervalGraph.png" width="50%">
   
 * **Bonus Question** Can you change the collection interval without modifying the Python check file you created?
 

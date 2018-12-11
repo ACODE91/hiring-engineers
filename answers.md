@@ -117,11 +117,11 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
   1. As described in [the Collection Interval section](https://docs.datadoghq.com/developers/write_agent_check/?tab=agentv6#collection-interval), changing the collection interval is done by setting it on the `ruben.yaml`file on `/etc/datadog-agent/conf.d/`
     1. The check config file, `ruben.yaml`, needs to be updated in the following way:
 
-<img src="/img/CheckInterval.png" width="50%">
+<img src="/img/CheckInterval.png" width="40%">
 
    2. The check is now sending data every 45 seconds.
    
-<img src="/img/CheckIntervalGraph.png" width="50%">
+<img src="/img/CheckIntervalGraph.png" width="70%">
   
 * **Bonus Question** Can you change the collection interval without modifying the Python check file you created?
 

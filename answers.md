@@ -127,7 +127,7 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
 
  * It seems that this question is outdated, as the obvious answer following the documentation) doesn't require to modify the custom check's python file.
  * Just for the sake of the exercise, I can try to answer the reverse question. How to report every 45 seconds without chaging the config file.
-    1. Considering the default reporting inteval is 15 seconds, and the agent will report only if the previous execution of the custom check has finished, a simple answer will be to include a `time.sleep(20)`step just after the `self.gauge('custom.ruben', uniform(0, 1000))`step.
+    1. Considering the default reporting inteval is 15 seconds, and the agent will report only if the previous execution of the custom check has finished, a simple answer will be to include a `time.sleep(35)`step just after the `self.gauge('custom.ruben', uniform(0, 1000))`step.
     2. This will inhibit the agent to report in the second and third slots (15 and 30 seconds), but will freed the check code long enough the third slot arrives (45 seconds).
 
 ## Visualizing Data:
@@ -140,11 +140,72 @@ Utilize the Datadog API to create a Timeboard that contains:
 
 Please be sure, when submitting your hiring challenge, to include the script that you've used to create this Timeboard.
 
+ 1. As described in the [Datadog Docuemntation](https://docs.datadoghq.com/api/?lang=bash#create-a-timeboard) the first thing required to use the API is to have both and API and an APP Keys.
+  1. Keys are created and managed from the Datadog UI. Navigate to Integrations/API:
+<img src="/img/APIKeyAccess.png" width="30%">
+  2. The API key is already present, but the APP key is not. Create it from the UI by writing a name and clicking the _Create Application Key_ button:
+<img src="/img/APIKeyCreation.png" width="100%">
+  3. The CURL command to create the required timeboard is the following:
+  
+    curl  -X POST -H "Content-type: application/json" \
+    -d '{
+	      "graphs" : [{
+          "title": "My Custom Check",
+          "definition": {
+            "viz": "timeseries",
+            "requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}"}] 
+            }  	
+          },
+          {
+          "title": "WT Dirty Bytes (Anomalies)",
+          "definition": {
+            "viz": "timeseries",
+            "requests": [{"q":"anomalies(avg:mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache{server:mongodb://localhost:27017/admin}, \u0027basic\u0027, 2)"}] 
+            }
+          },
+          {
+          "title": "My Custom Check (1h Buckets)",
+          "definition": {
+            "viz": "timeseries",
+            "type":"bars",
+            "requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}.rollup(sum,3600)"}] 
+            }
+          }],
+      "title" : "My Custom Timeboard",
+      "description" : "Basic timeboard over my custom check and some MongoDB variables",
+      "read_only": "True"
+    }' \
+    "https://api.datadoghq.com/api/v1/dash?api_key=edb197c52****************47&application_key=f11497***************f6df5c"`
+
+   4. There are a few parts of the call that are not evident:
+    1. `"graphs" : [{` This is an array. Include as many sub documents as required, in our case, 3.
+    2. `"requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}"}]` Between curly braces the tags that will be used for filtering
+    3. `\u0027basic\u0027` The parameter of the anomalies function needs to be between single quotes. Theey need to be escaped using their unicode representation.
+    4. `"type":"bars"` Bars are a better representaion for this type of graph.
+
 Once this is created, access the Dashboard from your Dashboard List in the UI:
 
+<img src="/img/Timeboard.png" width="80%">
+
 * Set the Timeboard's timeframe to the past 5 minutes
+  1. Click and drag on the graph to set the timeframe
+  
+<img src="/img/Timeboard5m.png" width="80%">
+
 * Take a snapshot of this graph and use the @ notation to send it to yourself.
+  1. Using the samll _camera_ icon on any graph the annotations windows appears.
+  2. Putting the _@_ simbol will show a list of recipients on the organisation. In this example, only one:
+  
+<img src="/img/Annotation.png" width="40%">
+
+ 3. After a few seconds an email withthe notification is received (if the )
+
+<img src="/img/AnnotationMail.png" width="70%">
+ 
 * **Bonus Question**: What is the Anomaly graph displaying?
+
+The anomaly graph is showing the temporal serie together with a gray band, highlighting the points of the serie out of the band. As described, the _deviation_ parameter controls the width of the band.
+There are three different algorithms to determine the range of acceptable values. The simplest one (basic) only takes in account the distribution of the data present in the graph, while the most advanced ones (agile and robust) consider historical data and factors in temporal patterns of the data.
 
 ## Monitoring Data
 

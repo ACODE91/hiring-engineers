@@ -125,10 +125,11 @@ I have used a Ubuntu v 16.04 on a vagrant VM as suggested in the README.
   
 * **Bonus Question** Can you change the collection interval without modifying the Python check file you created?
 
- * It seems that this question is outdated, as the obvious answer following the documentation) doesn't require to modify the custom check's python file.
- * Just for the sake of the exercise, I can try to answer the reverse question. How to report every 45 seconds without chaging the config file.
-    1. Considering the default reporting inteval is 15 seconds, and the agent will report only if the previous execution of the custom check has finished, a simple answer will be to include a `time.sleep(35)`step just after the `self.gauge('custom.ruben', uniform(0, 1000))`step.
-    2. This will inhibit the agent to report in the second and third slots (15 and 30 seconds), but will freed the check code long enough the third slot arrives (45 seconds).
+It seems that this question is outdated, as the obvious answer following the documentation) doesn't require to modify the custom check's python file.
+Just for the sake of the exercise, I can try to answer the reverse question. How to report every 45 seconds without chaging the config file?.
+    
+ 1. Considering the default reporting inteval is 15 seconds, and the agent will report only if the previous execution of the custom check has finished, a simple answer will be to include a `time.sleep(35)`step just after the `self.gauge('custom.ruben', uniform(0, 1000))`step.
+ 2. This will inhibit the agent to report in the second and third slots (15 and 30 seconds), but will freed the check code long enough the third slot arrives (45 seconds).
 
 ## Visualizing Data:
 
@@ -140,48 +141,49 @@ Utilize the Datadog API to create a Timeboard that contains:
 
 Please be sure, when submitting your hiring challenge, to include the script that you've used to create this Timeboard.
 
- 1. As described in the [Datadog Docuemntation](https://docs.datadoghq.com/api/?lang=bash#create-a-timeboard) the first thing required to use the API is to have both and API and an APP Keys.
-  1. Keys are created and managed from the Datadog UI. Navigate to Integrations/API:
-<img src="/img/APIKeyAccess.png" width="30%">
-  2. The API key is already present, but the APP key is not. Create it from the UI by writing a name and clicking the _Create Application Key_ button:
+As described in the [Datadog Documentation](https://docs.datadoghq.com/api/?lang=bash#create-a-timeboard) the first thing required to use the API is to have both and API and an APP Keys.
+ 1. Keys are created and managed from the Datadog UI. Navigate to Integrations/API:
+<img src="/img/APIKeysAccess.png" width="30%">
+ 2. The API key is already present, but the APP key is not. Create it from the UI by writing a name and clicking the Create Application Key button:
 <img src="/img/APIKeyCreation.png" width="100%">
-  3. The CURL command to create the required timeboard is the following:
+ 3. The CURL command to create the required timeboard is the following:
   
-    curl  -X POST -H "Content-type: application/json" \
-    -d '{
-	      "graphs" : [{
-          "title": "My Custom Check",
-          "definition": {
-            "viz": "timeseries",
-            "requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}"}] 
-            }  	
-          },
-          {
-          "title": "WT Dirty Bytes (Anomalies)",
-          "definition": {
-            "viz": "timeseries",
-            "requests": [{"q":"anomalies(avg:mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache{server:mongodb://localhost:27017/admin}, \u0027basic\u0027, 2)"}] 
-            }
-          },
-          {
-          "title": "My Custom Check (1h Buckets)",
-          "definition": {
-            "viz": "timeseries",
-            "type":"bars",
-            "requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}.rollup(sum,3600)"}] 
-            }
-          }],
-      "title" : "My Custom Timeboard",
-      "description" : "Basic timeboard over my custom check and some MongoDB variables",
-      "read_only": "True"
-    }' \
-    "https://api.datadoghq.com/api/v1/dash?api_key=edb197c52****************47&application_key=f11497***************f6df5c"`
+	    curl  -X POST -H "Content-type: application/json" \
+	    -d '{
+		      "graphs" : [{
+		  "title": "My Custom Check",
+		  "definition": {
+		    "viz": "timeseries",
+		    "requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}"}] 
+		    }  	
+		  },
+		  {
+		  "title": "WT Dirty Bytes (Anomalies)",
+		  "definition": {
+		    "viz": "timeseries",
+		    "requests": [{"q":"anomalies(avg:mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache{server:mongodb://localhost:27017/admin}, \u0027basic\u0027, 2)"}] 
+		    }
+		  },
+		  {
+		  "title": "My Custom Check (1h Buckets)",
+		  "definition": {
+		    "viz": "timeseries",
+		    "type":"bars",
+		    "requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}.rollup(sum,3600)"}] 
+		    }
+		  }],
+	      "title" : "My Custom Timeboard",
+	      "description" : "Basic timeboard over my custom check and some MongoDB variables",
+	      "read_only": "True"
+	    }' \
+	    "https://api.datadoghq.com/api/v1/dash?api_key=edb197c52****************47&application_key=f11497***************f6df5c"`
 
-   4. There are a few parts of the call that are not evident:
-    1. `"graphs" : [{` This is an array. Include as many sub documents as required, in our case, 3.
-    2. `"requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}"}]` Between curly braces the tags that will be used for filtering
-    3. `\u0027basic\u0027` The parameter of the anomalies function needs to be between single quotes. Theey need to be escaped using their unicode representation.
-    4. `"type":"bars"` Bars are a better representaion for this type of graph.
+  4. There are a few parts of the call that are not evident:
+   
+   1. `"graphs" : [{` This is an array. Include as many sub documents as required, in our case, 3.
+   2. `"requests": [{"q": "avg:custom.ruben{host:ubuntu-xenial}"}]` Between curly braces the tags that will be used for filtering
+   3. `\u0027basic\u0027` The parameter of the anomalies function needs to be between single quotes. Theey need to be escaped using their unicode representation.
+   4. `"type":"bars"` Bars are a better representaion for this type of graph.
 
 Once this is created, access the Dashboard from your Dashboard List in the UI:
 
@@ -198,7 +200,7 @@ Once this is created, access the Dashboard from your Dashboard List in the UI:
   
 <img src="/img/Annotation.png" width="40%">
 
- 3. After a few seconds an email withthe notification is received (if the )
+ 3. After a few seconds an email with the notification is received (if checked on My Settings/Preferences )
 
 <img src="/img/AnnotationMail.png" width="70%">
  

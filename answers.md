@@ -187,22 +187,22 @@ As described in the [Datadog Documentation](https://docs.datadoghq.com/api/?lang
 
 Once this is created, access the Dashboard from your Dashboard List in the UI:
 
-<img src="/img/Timeboard.png" width="80%">
+<img src="/img/Timeboard.png" width="100%">
 
 * Set the Timeboard's timeframe to the past 5 minutes
   1. Click and drag on the graph to set the timeframe
   
-<img src="/img/Timeboard5m.png" width="80%">
+<img src="/img/Timeboard5m.png" width="100%">
 
 * Take a snapshot of this graph and use the @ notation to send it to yourself.
   1. Using the samll _camera_ icon on any graph the annotations windows appears.
   2. Putting the _@_ simbol will show a list of recipients on the organisation. In this example, only one:
   
-<img src="/img/Annotation.png" width="40%">
+<img src="/img/Annotation.png" width="30%">
 
  3. After a few seconds an email with the notification is received (if checked on My Settings/Preferences )
 
-<img src="/img/AnnotationMail.png" width="70%">
+<img src="/img/AnnotationMail.png" width="90%">
  
 * **Bonus Question**: What is the Anomaly graph displaying?
 

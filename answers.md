@@ -195,7 +195,7 @@ Once this is created, access the Dashboard from your Dashboard List in the UI:
 <img src="/img/Timeboard5m.png" width="100%">
 
 * Take a snapshot of this graph and use the @ notation to send it to yourself.
-  1. Using the samll _camera_ icon on any graph the annotations windows appears.
+  1. Using the small _camera_ icon on any graph the annotations windows appears.
   2. Putting the _@_ simbol will show a list of recipients on the organisation. In this example, only one:
   
 <img src="/img/Annotation.png" width="30%">
@@ -219,19 +219,80 @@ Create a new Metric Monitor that watches the average of your custom metric (my_m
 * Alerting threshold of 800
 * And also ensure that it will notify you if there is No Data for this query over the past 10m.
 
+ 1. Navigate to _Monitors/New Monitor_ in the UI
+
+<img src="/img/NewMonitor.png" width="30%">
+
+ 2. Select the Monitor type to _Metric_
+
+<img src="/img/MonitorType.png" width="60%">
+
+ 3. Configure the Monitor as described. It's needed select MultiAlert and include `host` in the list of variables to be able to notify as required in the next step.
+
+<img src="/img/Monitor.png" width="80%">
+
 Please configure the monitor’s message so that it will:
 
 * Send you an email whenever the monitor triggers.
 * Create different messages based on whether the monitor is in an Alert, Warning, or No Data state.
 * Include the metric value that caused the monitor to trigger and host ip when the Monitor triggers an Alert state.
+
+  4. In the __Say What's Happening__ section write your custom message
+  
+<img src="/img/MonitorNotification.png" width="60%">
+
+Here you have a transcript of the message I have created
+
+		{{#is_warning}} Ok, just a warning. Things can get worse, just saying, but for the moment you're safe.
+
+		The current value is {{value}}, if it gets to {{threshold}} you'll get another notification. {{/is_warning}} {{host.ip}} {{#is_alert}} Booom!
+
+		The {{host.name}} server is facing a crisis.
+
+		The value of the variable is now on {{value}}.
+
+		There's nothing you can do to control a completely random variable, but if you feel the impulse of doing something, SSH to {{host.ip}} and pray in front of your screen.{{/is_alert}}
+
+		{{#is_no_data}} We have not received data for this variable in the last 10 minutes.
+
+		Maybe it's ok, maybe not. You better check the host status on this dashboard:
+
+		https://app.datadoghq.com/dash/integration/system_overview?tpl_var_scope=host:{{host.name}}
+
+		Have a nice day!{{/is_no_data}}
+
+		@elterce@gmail.com
+
+  5. The last line also sets the __Notify Your Team__ section
+
 * When this monitor sends you an email notification, take a screenshot of the email that it sends you.
+
+<img src="/img/MonitorEmail.png" width="80%">
 
 * **Bonus Question**: Since this monitor is going to alert pretty often, you don’t want to be alerted when you are out of the office. Set up two scheduled downtimes for this monitor:
 
   * One that silences it from 7pm to 9am daily on M-F,
   * And one that silences it all day on Sat-Sun.
   * Make sure that your email is notified when you schedule the downtime and take a screenshot of that notification.
+   1. Navigate to _Notifications/Manage Downtime_ in the UI
 
+<img src="/img/ManageDowntime.png" width="30%">
+
+   2. Click on the yellow __Schedule Downtime__ button on the top right of the screen.
+   3. Fill the required data on screen.
+   	1. In this step we're setting the weekday downtime
+   
+<img src="/img/Downtime1.png" width="60%">
+
+<img src="/img/Downtime1Email.png" width="60%"> 
+   
+   4. Repeat step 2 and 3 to fill the weekend downtime.
+   	1. Note that we're only silencing notifications out of the bonds of the already created downtime
+	
+<img src="/img/Downtime2.png" width="60%">
+
+<img src="/img/Downtime2Email.png" width="60%">
+	
 ## Collecting APM Data:
 
 Given the following Flask app (or any Python/Ruby/Go app of your choice) instrument this using Datadog’s APM solution:

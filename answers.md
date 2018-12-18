@@ -330,6 +330,42 @@ if __name__ == '__main__':
 
 * **Note**: Using both ddtrace-run and manually inserting the Middleware has been known to cause issues. Please only use one or the other.
 
+ 0. Install Dependencies.
+ 	1. Create a folder for the application
+	
+		mkdir my_app
+		cd my_app		
+	2. Define a Python virtual environment. This helps with dependencies when several Python projects share the same server.
+	
+		sudo apt-get install python-virtualenv
+		virtualenv venv
+	3. Run the venv:
+	
+		. venv/bin/activate
+	4. Install `Flask`by running the following command on the venv shell:
+ 
+ 		pip install Flask
+	5. Create the `my_app.py`file with the provided code.
+	
+ 1. Simple Solution
+ 	1. Datadog offers a a very straight forward way to trace Python applications. There is little control over the traces but provide basic instrumentation.
+	2. Install `ddtrace`, the Datadog tracing agent for Python. 
+	
+		pip install ddtrace
+		
+	3. Run the app using the `ddtrace run` wrapper. Define the `FLASK_APP` variable with the path of your app. Set a port different from 5000 (already in use by the datadog agent, an unfortunately, the port by default in Flask)
+	
+		FLASK_APP=~/my_app/my_app.py ddtrace-run flask run --port 5050
+		
+	4. By calling some of the endpoints of the Service we generate traffic and traces that are sent to Datadog:
+	
+<img src="/img/AppRequests.png" width="40%">
+
+<img src="/img/APMService.png" width="80%">
+	5. Cliking on the Service provides a detailed view of the different calls to the resources and the response time fo each:
+	
+<img src="/img/APMTraces.png" width="100%">
+
 * **Bonus Question**: What is the difference between a Service and a Resource?
 
 Provide a link and a screenshot of a Dashboard with both APM and Infrastructure Metrics.

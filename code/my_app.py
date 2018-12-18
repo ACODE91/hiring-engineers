@@ -26,16 +26,24 @@ def api_entry():
     # just these lines of code:
     with tracer.trace("my_span") as span:
         # Designate this span as a separate service:
-        span.service="my_service"
+        span.service="Wait_service"
         # Add metadata:
-        span.set_tag('service_type','my_service_type')
+        span.set_tag('service_type','Just_Sleep')
         time.sleep(0.03)
     return 'Entrypoint to the Application'
 
 @app.route('/api/apm')
-@tracer.wrap(name='Trace')
+@tracer.wrap(name='APM')
 def apm_endpoint():
+    time.sleep(0.05)
     return 'Getting APM Started'
 
 @app.route('/api/trace')
-"my_app.py" 47L, 1238C
+@tracer.wrap(name='Trace', service='Tracing_service')
+def trace_endpoint():
+    time.sleep(0.01)
+    return 'Posting Traces'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='5050')
+

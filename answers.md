@@ -1,12 +1,3 @@
-If you want to apply as a solutions engineer at [Datadog](http://datadog.com) you are in the right spot. Read on, it's fun, I promise.
-
-<a href="http://www.flickr.com/photos/alq666/10125225186/" title="The view from our roofdeck">
-<img src="http://farm6.staticflickr.com/5497/10125225186_825bfdb929.jpg" width="500" height="332" alt="_DSC4652"></a>
-
-## The Exercise
-
-Don’t forget to read the [References](https://github.com/DataDog/hiring-engineers/blob/solutions-engineer/README.md#references)
-
 ## Questions
 
 Please provide screenshots and code snippets for all steps.
@@ -330,7 +321,7 @@ if __name__ == '__main__':
 
 * **Note**: Using both ddtrace-run and manually inserting the Middleware has been known to cause issues. Please only use one or the other.
 
- 0. Install Dependencies.
+ 0. Install Dependencies. [Flask](http://flask.pocoo.org/docs/1.0/installation/#install-create-env) and ddtrace
  	1. Create a folder for the application
 	
 		mkdir my_app
@@ -346,31 +337,50 @@ if __name__ == '__main__':
  
  		pip install Flask
 	5. Create the `my_app.py`file with the provided code.
+	6. Install `ddtrace`, the Datadog tracing agent for Python. 
+	
+		pip install ddtrace
 	
  1. Simple Solution
  	1. Datadog offers a a very straight forward way to trace Python applications. There is little control over the traces but provide basic instrumentation.
-	2. Install `ddtrace`, the Datadog tracing agent for Python. 
+	2. Run the app using the `ddtrace run` wrapper. Define the `FLASK_APP` variable with your app filename. Set a port different from 5000 (already in use by the datadog agent, an unfortunately, the port by default in Flask)
 	
-		pip install ddtrace
-		
-	3. Run the app using the `ddtrace run` wrapper. Define the `FLASK_APP` variable with the path of your app. Set a port different from 5000 (already in use by the datadog agent, an unfortunately, the port by default in Flask)
-	
-		FLASK_APP=~/my_app/my_app.py ddtrace-run flask run --port 5050
+		FLASK_APP=my_app.py DATADOG_ENV=APM_TEST ddtrace-run flask run --port 5050
 		
 	4. By calling some of the endpoints of the Service we generate traffic and traces that are sent to Datadog:
 	
-<img src="/img/AppRequests.png" width="40%">
+<img src="/img/AppRequests.png" width="60%">
 
-<img src="/img/APMService.png" width="80%">
+<img src="/img/APMService.png" width="90%">
 	5. Cliking on the Service provides a detailed view of the different calls to the resources and the response time fo each:
 	
 <img src="/img/APMTraces.png" width="100%">
+	6. To generate a more interesting graphs you can use a shell script like [this example](/code/load.sh)
+
+ 2. Advance Solution
+  1. It's possible to instrument the application in a much more detailed way adding decorators in the code itself. That method provides the ability to create a more granular tracing experience and customize the metadata.
+  2. Modify the `my_app.py` file to include the following decorators:
+	1. A resource name for each one of the resources ["Home", APM, "Traces"]
+	2. Some extra metadata and a different service name on the APM resource
+	3. Custom metadata and a subservice span on the "Home" resource.
+  3. This [custom code](/code/my_app.py) provides an example of the updated function. Execute the file susing the following sentence to setup the service name to `rubensflaskapp`:
+  
+  		FLASK_APP=my_app.py DATADOG_ENV=APM_TEST DATADOG_SERVICE_NAME=RubensFlaskApp ddtrace-run flask run --port 5050
+  
+  4. The traces are much more rich now:
+  
+<img src="/img/APMTraces2.png" width="100%">
+
+  5. And the Flame graph provides a detailes layer over layer information of the different stages for the call
+
+<img src="/img/APMTraces2.png" width="100%"> 
+
+You can access the [Dashboard](https://p.datadoghq.com/sb/af58179f4-d7b4e2b7492026ffb067565117e24883) directly
 
 * **Bonus Question**: What is the difference between a Service and a Resource?
 
-Provide a link and a screenshot of a Dashboard with both APM and Infrastructure Metrics.
-
-Please include your fully instrumented app in your submission, as well.
+A "Service" is the name of a set of processes that work together to provide a feature set. A service is typically associated with an applciation that provides one or more pieces of functionality called resources.
+A "Resource" is a particular call to one of the service functionalities.
 
 ## Final Question:
 
@@ -378,42 +388,10 @@ Datadog has been used in a lot of creative ways in the past. We’ve written som
 
 Is there anything creative you would use Datadog for?
 
-## Instructions
+ * A monitoring system is a powerful tool to control with limited resources a large set of servers, processes and tools. The alerting system allows administrators to receive promt notification of metrics going out of usual ranges, and even to include custom instructions to investigate further ot correct the root cause of the problem.
+ 
+In this point I'm seeing a potential new use case for Datadog. The ability to perform corrective actions automatically, releasing administrators of the tedious and repetitive workload.
 
-If you have a question, create an issue in this repository.
+In example: If the used space of a server disk is higher than 90%, the usual corrective action (specially in with shared storage on VM or in cloud environments) is to provide more storage until the used space goes down to 70%. This is a fairly trivial and repetitive task that could be automated.
 
-To submit your answers:
-
-* Fork this repo.
-* Answer the questions in answers.md
-* Commit as much code as you need to support your answers.
-* Submit a pull request.
-* Don't forget to include links to your dashboard(s), even better links and screenshots. We recommend that you include your screenshots inline with your answers.
-
-## References
-
-### How to get started with Datadog
-
-* [Datadog overview](https://docs.datadoghq.com/)
-* [Guide to graphing in Datadog](https://docs.datadoghq.com/graphing/)
-* [Guide to monitoring in Datadog](https://docs.datadoghq.com/monitors/)
-
-### The Datadog Agent and Metrics
-
-* [Guide to the Agent](https://docs.datadoghq.com/agent/)
-* [Datadog Docker-image repo](https://hub.docker.com/r/datadog/docker-dd-agent/)
-* [Writing an Agent check](https://docs.datadoghq.com/developers/agent_checks/)
-* [Datadog API](https://docs.datadoghq.com/api/)
-
-### APM
-
-* [Datadog Tracing Docs](https://docs.datadoghq.com/tracing)
-* [Flask Introduction](http://flask.pocoo.org/docs/0.12/quickstart/)
-
-### Vagrant
-
-* [Setting Up Vagrant](https://www.vagrantup.com/intro/getting-started/)
-
-### Other questions:
-
-* [Datadog Help Center](https://help.datadoghq.com/hc/en-us)
+In order to do that, the dd-agent should have higher privileges so it can execute the scripts. The corrective scripts will be stored, centralised, in datadog, and the agents will retrieve them when they connect to report new metrics if an alert has been fired. This makes easier the maintenace of the scrips and solves the problem of getting the agents notified (no inboud traffic required).

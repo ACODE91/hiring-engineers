@@ -369,7 +369,7 @@ if __name__ == '__main__':
   
   4. The traces are much more rich now:
   
-<img src="/img/APMTraces2.png" width="100%">
+<img src="/img/APMTraces.png" width="100%">
 
   5. And the Flame graph provides a detailes layer over layer information of the different stages for the call
 
@@ -384,11 +384,11 @@ A "Resource" is a particular call to one of the service functionalities.
 
 ## Final Question:
 
-Datadog has been used in a lot of creative ways in the past. We’ve written some blog posts about using Datadog to monitor the NYC Subway System, Pokemon Go, and even office restroom availability!
+_Datadog has been used in a lot of creative ways in the past. We’ve written some blog posts about using Datadog to monitor the NYC Subway System, Pokemon Go, and even office restroom availability!
 
-Is there anything creative you would use Datadog for?
+_Is there anything creative you would use Datadog for?
 
- * A monitoring system is a powerful tool to control with limited resources a large set of servers, processes and tools. The alerting system allows administrators to receive promt notification of metrics going out of usual ranges, and even to include custom instructions to investigate further ot correct the root cause of the problem.
+A monitoring system is a powerful tool to control with limited resources a large set of servers, processes and tools. The alerting system allows administrators to receive promt notification of metrics going out of usual ranges, and even to include custom instructions to investigate further ot correct the root cause of the problem.
  
 In this point I'm seeing a potential new use case for Datadog. The ability to perform corrective actions automatically, releasing administrators of the tedious and repetitive workload.
 
